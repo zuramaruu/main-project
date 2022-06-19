@@ -4,11 +4,12 @@
 #include <LiquidCrystal_I2C.h>
 #include <L298N.h>
 
+LiquidCrystal_I2C lcd(0x27, 20, 4);
+
 #define ONE_WIRE_BUS 2
 #define ONE_WIRE_BUS2 3
 
-#define analogInPin  A0
-#define analogInPin2  A1
+
 
 //-- Sensor Suhu --//
 OneWire oneWire(ONE_WIRE_BUS);
@@ -17,21 +18,24 @@ DallasTemperature sensors(&oneWire);
 DallasTemperature sensors2(&oneWire2);
 DeviceAddress insideThermometer;
 DeviceAddress insideThermometer2;
+float temperature_1, temperature_2;
 
 //-- PH sensor --//
 float calibration_value = 21.34 + 4.0;
-float calibration_value2 = 21.34 + 4.0;
-int phval = 0;
-int phval2 = 0;
+float ph_val1, ph_val2;
 unsigned long int avgval;
 unsigned long int avgval2;
 int buffer_arr[10], temp;
 int buffer_arr2[10], temp2;
+int PhPin = A2;
+int PhPin2 = A3;
 
 //-- Salinity sensor with Fuzzy Logic --//
 float salinitasSatu, salinitasDua;
 float uRendahSalSatu, uSedangSalSatu, uTinggiSalSatu;
 float uRendahSalDua, uSedangSalDua, uTinggiSalDua;
+
+int AnalogInPin = A0, AnalogInPin2 = A1;
 
 float minr[9];
 float Rule[9];
@@ -43,6 +47,8 @@ float terang = 255;
 //-- L289N --//
 int IN_1 = 4;
 int IN_2 = 5;
+
+int processTime[3] = {0, 0, 0};
 
 unsigned char salinitasRendah1(){
     if (salinitasSatu <= 200.46){ uRendahSalSatu =1;}
@@ -146,9 +152,11 @@ float defuzzyfikasi()
     // printf("Hasil B : %f\n", B);
     return A / B;
 }
-
-void tampilkanPh(int num, float cal_value, int ph_value, unsigned long int avg_value, int temp_value, int buffer_arrFun[]){
-    phSet();
+float getPh(int SensorPin, float cal_value, unsigned long int avg_value, int temp_value, int buffer_arrFun[]){
+    for(int i=0;i<10;i++){
+        buffer_arrFun[i]=analogRead(SensorPin);
+        delay(30);
+    }
     for(int i=0;i<9;i++)
     {
         for(int j=i+1;j<10;j++)
@@ -166,47 +174,16 @@ void tampilkanPh(int num, float cal_value, int ph_value, unsigned long int avg_v
         avg_value+=buffer_arrFun[i];
     float volt=(float)avg_value*5.0/1024/6;
     float ph_act = -5.70 * volt + cal_value;
-    Serial.print("pH Val ");
-    Serial.print(num);
-    Serial.print(" = ");
-    Serial.print(ph_act);
-    Serial.println();
+    return ph_act;
 }
-
-void phSet(){
-    for(int i=0;i<10;i++){
-        buffer_arr[i]=analogRead(A0);
-    }
-    for (int i = 0; i < 10; i++){
-        buffer_arr2[i] = analogRead(A0);
-    }
+float getSalinity(int SensorPin){
+    float Sal= analogRead(SensorPin);
+    return Sal;
 }
-
-void tampilkanSalinity(int num, int sensor_val)
-{
-    Serial.print("sensor ADC ");
-    Serial.print(num);
-    Serial.print(" = ");
-    Serial.print(sensor_val);
-    Serial.println();
-}
-
-void printAddress(DeviceAddress deviceAddress)
-{
-    for (uint8_t i = 0; i < 8; i++)
-    {
-        if (deviceAddress[i] < 16) Serial.print("0");
-        Serial.print(deviceAddress[i], HEX);
-    }
-    Serial.println();
-}
-
-void printTemperature(DeviceAddress deviceAddress)
-{
-    float tempC = sensors.getTempC(deviceAddress);
-    Serial.print("Temp C: ");
-    Serial.print(tempC);
-    Serial.println();
+float getDallasTemperature(DallasTemperature _Sensors, DeviceAddress _deviceAddress){
+    _Sensors.requestTemperatures();
+    float tempC = _Sensors.getTempC(_deviceAddress);
+    return tempC;
 }
 
 void setup() {
@@ -220,30 +197,45 @@ void setup() {
     pinMode(IN_1, OUTPUT);
     pinMode(IN_2, OUTPUT);
 
+    lcd.init();
+    lcd.backlight();
 }
-
 void loop() {
-    sensors.requestTemperatures();
-    sensors2.requestTemperatures();
+    temperature_1 = getDallasTemperature(sensors, insideThermometer);
+    temperature_2 = getDallasTemperature(sensors2, insideThermometer2);
 
-    salinitasSatu = analogRead(analogInPin);
-    salinitasDua = analogRead(analogInPin2);
+    salinitasSatu = getSalinity(AnalogInPin);
+    salinitasDua = getSalinity(AnalogInPin2);
 
-    printTemperature(insideThermometer);
-    printTemperature(insideThermometer2);
-    Serial.println();
+    ph_val1 = getPh(PhPin, calibration_value, avgval, temp, buffer_arr);
+    ph_val2 = getPh(PhPin2, calibration_value, avgval2, temp2, buffer_arr2);
 
-    tampilkanSalinity(1, salinitasSatu);
-    tampilkanSalinity(2, salinitasDua);
-    Serial.println();
-
-    tampilkanPh(1, calibration_value, phval, avgval, temp, buffer_arr);
-    tampilkanPh(2, calibration_value2, phval2, avgval2, temp2, buffer_arr2);
-    Serial.println();
-
-    Serial.print("UV = ");
-    Serial.print(defuzzyfikasi());
-    Serial.println();
-    digitalWrite(IN_1, defuzzyfikasi());
-
+    if (millis() - processTime[0] >= 2000){
+        processTime[0] = millis();
+        Serial.print("Temp 1 = ");
+        Serial.print(temperature_1);
+        Serial.print("             Temp 2 = ");
+        Serial.print(temperature_2);
+        Serial.println();
+        Serial.print("Salinity 1 = ");
+        Serial.print(salinitasSatu);
+        Serial.print("          Salinity 2 = ");
+        Serial.print(salinitasDua);
+        Serial.print("           Fuzzy      = ");
+        Serial.print(defuzzyfikasi());
+        Serial.println();
+        Serial.print("Ph Value 1 = ");
+        Serial.print(ph_val1);
+        Serial.print("           Ph Value 2 = ");
+        Serial.print(ph_val2);
+        Serial.println();
+//        digitalWrite(IN_1, defuzzyfikasi());
+    }
+    if (millis() - processTime[1] >= 2000){
+        processTime[1] = millis();
+        lcd.setCursor (5, 0);
+        lcd.setCursor (3, 2);
+        //-- LCD PRINT --//
+    }
+    delay(500);
 }
