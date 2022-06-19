@@ -210,29 +210,50 @@ void loop() {
     ph_val1 = getPh(PhPin, calibration_value, avgval, temp, buffer_arr);
     ph_val2 = getPh(PhPin2, calibration_value, avgval2, temp2, buffer_arr2);
 
-    if (millis() - processTime[0] >= 2000){
-        processTime[0] = millis();
-        Serial.print("Temp 1 = ");
-        Serial.print(temperature_1);
-        Serial.print("             Temp 2 = ");
-        Serial.print(temperature_2);
-        Serial.println();
-        Serial.print("Salinity 1 = ");
-        Serial.print(salinitasSatu);
-        Serial.print("          Salinity 2 = ");
-        Serial.print(salinitasDua);
-        Serial.print("           Fuzzy      = ");
-        Serial.print(defuzzyfikasi());
-        Serial.println();
-        Serial.print("Ph Value 1 = ");
-        Serial.print(ph_val1);
-        Serial.print("           Ph Value 2 = ");
-        Serial.print(ph_val2);
-        Serial.println();
-//        digitalWrite(IN_1, defuzzyfikasi());
-    }
+    // -- Serial Print --//
+//    if (millis() - processTime[0] >= 2000){
+//        processTime[0] = millis();
+//        Serial.print("Temp 1 = ");
+//        Serial.print(temperature_1);
+//        Serial.print("             Temp 2 = ");
+//        Serial.print(temperature_2);
+//        Serial.println();
+//        Serial.print("Salinity 1 = ");
+//        Serial.print(salinitasSatu);
+//        Serial.print("          Salinity 2 = ");
+//        Serial.print(salinitasDua);
+//        Serial.print("           Fuzzy      = ");
+//        Serial.print(defuzzyfikasi());
+//        Serial.println();
+//        Serial.print("Ph Value 1 = ");
+//        Serial.print(ph_val1);
+//        Serial.print("           Ph Value 2 = ");
+//        Serial.print(ph_val2);
+//        Serial.println();
+////        digitalWrite(IN_1, defuzzyfikasi());
+//    }
+
+    // Kirim String
     if (millis() - processTime[1] >= 2000){
         processTime[1] = millis();
+        Serial.print(String(temperature_1));
+        Serial.print("#");
+        Serial.print(String(temperature_2));
+        Serial.print("#");
+        Serial.print(String(salinitasSatu));
+        Serial.print("#");
+        Serial.print(String(salinitasDua));
+        Serial.print("#");
+        Serial.print(String(defuzzyfikasi()));
+        Serial.print("#");
+        Serial.print(String(ph_val1));
+        Serial.print("#");
+        Serial.print(String(ph_val2));
+        Serial.print("#");
+    }
+
+    if (millis() - processTime[2] >= 2000){
+        processTime[2] = millis();
         lcd.setCursor (5, 0);
         lcd.setCursor (3, 2);
         //-- LCD PRINT --//
