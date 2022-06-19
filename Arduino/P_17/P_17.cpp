@@ -50,6 +50,90 @@ int IN_2 = 5;
 
 int processTime[3] = {0, 0, 0};
 
+void setup() {
+    Serial.begin(9600);
+    sensors.begin();
+    sensors2.begin();
+    sensors.setResolution(insideThermometer, 9);
+    sensors2.setResolution(insideThermometer2, 9);
+//    printAddress(insideThermometer);
+//    printAddress(insideThermometer2);
+    pinMode(IN_1, OUTPUT);
+    pinMode(IN_2, OUTPUT);
+
+    lcd.init();
+    lcd.backlight();
+}
+void loop() {
+    temperature_1 = getDallasTemperature(sensors, insideThermometer);
+    temperature_2 = getDallasTemperature(sensors2, insideThermometer2);
+
+    salinitasSatu = getSalinity(AnalogInPin);
+    salinitasDua = getSalinity(AnalogInPin2);
+
+    ph_val1 = getPh(PhPin, calibration_value, avgval, temp, buffer_arr);
+    ph_val2 = getPh(PhPin2, calibration_value, avgval2, temp2, buffer_arr2);
+
+    // -- Serial Print Arduino Monitor --//
+//    if (millis() - processTime[0] >= 2000){
+//        processTime[0] = millis();
+//        Serial.print("Temp 1 = ");
+//        Serial.print(temperature_1);
+//        Serial.print("             Temp 2 = ");
+//        Serial.print(temperature_2);
+//        Serial.println();
+//        Serial.print("Salinity 1 = ");
+//        Serial.print(salinitasSatu);
+//        Serial.print("          Salinity 2 = ");
+//        Serial.print(salinitasDua);
+//        Serial.print("           Fuzzy      = ");
+//        Serial.print(defuzzyfikasi());
+//        Serial.println();
+//        Serial.print("Ph Value 1 = ");
+//        Serial.print(ph_val1);
+//        Serial.print("           Ph Value 2 = ");
+//        Serial.print(ph_val2);
+//        Serial.println();
+//        digitalWrite(IN_1, defuzzyfikasi());
+//    }
+
+    // Kirim String ke ESP32
+    if (millis() - processTime[1] >= 2000){
+        processTime[1] = millis();
+        String allString = String(temperature_1)+"#"+
+                           String(temperature_2)+"#"+
+                           String(salinitasSatu)+"#"+
+                           String(salinitasDua)+"#"+
+                           String(defuzzyfikasi())+"#"+
+                           String(ph_val1)+"#"+
+                           String(ph_val2)+"#";
+        Serial.print(allString);
+
+//        Serial.print(String(temperature_1));
+//        Serial.print("#");
+//        Serial.print(String(temperature_2));
+//        Serial.print("#");
+//        Serial.print(String(salinitasSatu));
+//        Serial.print("#");
+//        Serial.print(String(salinitasDua));
+//        Serial.print("#");
+//        Serial.print(String(defuzzyfikasi()));
+//        Serial.print("#");
+//        Serial.print(String(ph_val1));
+//        Serial.print("#");
+//        Serial.print(String(ph_val2));
+//        Serial.print("#");
+    }
+
+    if (millis() - processTime[2] >= 2000){
+        processTime[2] = millis();
+        lcd.setCursor (5, 0);
+        lcd.setCursor (3, 2);
+        //-- LCD PRINT --//
+    }
+    delay(500);
+}
+
 unsigned char salinitasRendah1(){
     if (salinitasSatu <= 200.46){ uRendahSalSatu =1;}
     else if (salinitasSatu >= 200.46 && salinitasSatu <= 300.69){ uRendahSalSatu= (300.69 - salinitasSatu) / (300.69 - 200.46);}
@@ -184,79 +268,4 @@ float getDallasTemperature(DallasTemperature _Sensors, DeviceAddress _deviceAddr
     _Sensors.requestTemperatures();
     float tempC = _Sensors.getTempC(_deviceAddress);
     return tempC;
-}
-
-void setup() {
-    Serial.begin(9600);
-    sensors.begin();
-    sensors2.begin();
-    sensors.setResolution(insideThermometer, 9);
-    sensors2.setResolution(insideThermometer2, 9);
-//    printAddress(insideThermometer);
-//    printAddress(insideThermometer2);
-    pinMode(IN_1, OUTPUT);
-    pinMode(IN_2, OUTPUT);
-
-    lcd.init();
-    lcd.backlight();
-}
-void loop() {
-    temperature_1 = getDallasTemperature(sensors, insideThermometer);
-    temperature_2 = getDallasTemperature(sensors2, insideThermometer2);
-
-    salinitasSatu = getSalinity(AnalogInPin);
-    salinitasDua = getSalinity(AnalogInPin2);
-
-    ph_val1 = getPh(PhPin, calibration_value, avgval, temp, buffer_arr);
-    ph_val2 = getPh(PhPin2, calibration_value, avgval2, temp2, buffer_arr2);
-
-    // -- Serial Print --//
-//    if (millis() - processTime[0] >= 2000){
-//        processTime[0] = millis();
-//        Serial.print("Temp 1 = ");
-//        Serial.print(temperature_1);
-//        Serial.print("             Temp 2 = ");
-//        Serial.print(temperature_2);
-//        Serial.println();
-//        Serial.print("Salinity 1 = ");
-//        Serial.print(salinitasSatu);
-//        Serial.print("          Salinity 2 = ");
-//        Serial.print(salinitasDua);
-//        Serial.print("           Fuzzy      = ");
-//        Serial.print(defuzzyfikasi());
-//        Serial.println();
-//        Serial.print("Ph Value 1 = ");
-//        Serial.print(ph_val1);
-//        Serial.print("           Ph Value 2 = ");
-//        Serial.print(ph_val2);
-//        Serial.println();
-////        digitalWrite(IN_1, defuzzyfikasi());
-//    }
-
-    // Kirim String
-    if (millis() - processTime[1] >= 2000){
-        processTime[1] = millis();
-        Serial.print(String(temperature_1));
-        Serial.print("#");
-        Serial.print(String(temperature_2));
-        Serial.print("#");
-        Serial.print(String(salinitasSatu));
-        Serial.print("#");
-        Serial.print(String(salinitasDua));
-        Serial.print("#");
-        Serial.print(String(defuzzyfikasi()));
-        Serial.print("#");
-        Serial.print(String(ph_val1));
-        Serial.print("#");
-        Serial.print(String(ph_val2));
-        Serial.print("#");
-    }
-
-    if (millis() - processTime[2] >= 2000){
-        processTime[2] = millis();
-        lcd.setCursor (5, 0);
-        lcd.setCursor (3, 2);
-        //-- LCD PRINT --//
-    }
-    delay(500);
 }
