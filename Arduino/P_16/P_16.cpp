@@ -97,30 +97,18 @@ void loop(){
     if(waktu_sekarang - waktu_sebelumnya >= 1000) {
         waktu_sebelumnya = waktu_sekarang;
 //        LoRa.beginPacket();
-//        LoRa.print(String(temperature_1));
-//        LoRa.print("#");
-//        LoRa.print(String(temperature_2));
-//        LoRa.print("#");
-//        LoRa.print(String(temperature_3));
-//        LoRa.print("#");
-//        LoRa.print(String(hum_1));
-//        LoRa.print("#");
-//        LoRa.print(String(hum_2));
-//        LoRa.print("#");
-//        LoRa.print(String(hum_3));
-//        LoRa.print("#");
-//        LoRa.print(String(ph_val1));
-//        LoRa.print("#");
-//        LoRa.print(String(ph_val2));
-//        LoRa.print("#");
-//        LoRa.print(String(ph_val3));
-//        LoRa.print("#");
-//        LoRa.print(String(moisSensorVolt));
-//        LoRa.print("#");
-//        LoRa.print(String(moisSensorVolt2));
-//        LoRa.print("#");
-//        LoRa.print(String(moisSensorVolt3));
-//        LoRa.print("#");
+        String allString = String(temperature_1)+"#"+
+                String(temperature_2)+"#"+
+                String(temperature_3)+"#"+
+                String(hum_1)+"#"+
+                String(hum_2)+"#"+
+                String(hum_3)+"#"+
+                String(ph_val1)+"#"+
+                String(ph_val2)+"#"+
+                String(ph_val3)+"#"+
+                String(moisSensorVolt)+"#"+
+                String(moisSensorVolt2)+"#"+
+                String(moisSensorVolt3)+"#";
 //        LoRa.endPacket();
     }
 
