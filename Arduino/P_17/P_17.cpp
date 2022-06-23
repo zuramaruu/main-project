@@ -9,8 +9,6 @@ LiquidCrystal_I2C lcd(0x27, 20, 4);
 #define ONE_WIRE_BUS 2
 #define ONE_WIRE_BUS2 3
 
-
-
 //-- Sensor Suhu --//
 OneWire oneWire(ONE_WIRE_BUS);
 OneWire oneWire2(ONE_WIRE_BUS2);
@@ -56,8 +54,8 @@ void setup() {
     sensors2.begin();
     sensors.setResolution(insideThermometer, 9);
     sensors2.setResolution(insideThermometer2, 9);
-//    printAddress(insideThermometer);
-//    printAddress(insideThermometer2);
+    //    printAddress(insideThermometer);
+    //    printAddress(insideThermometer2);
     pinMode(IN_1, OUTPUT);
     pinMode(IN_2, OUTPUT);
 
@@ -75,57 +73,56 @@ void loop() {
     ph_val2 = getPh(PhPin2, calibration_value, avgval2, temp2, buffer_arr2);
 
     // -- Serial Print Arduino Monitor --//
-//    if (millis() - processTime[0] >= 2000){
-//        processTime[0] = millis();
-//        Serial.print("Temp 1 = ");
-//        Serial.print(temperature_1);
-//        Serial.print("             Temp 2 = ");
-//        Serial.print(temperature_2);
-//        Serial.println();
-//        Serial.print("Salinity 1 = ");
-//        Serial.print(salinitasSatu);
-//        Serial.print("          Salinity 2 = ");
-//        Serial.print(salinitasDua);
-//        Serial.print("           Fuzzy      = ");
-//        Serial.print(defuzzyfikasi());
-//        Serial.println();
-//        Serial.print("Ph Value 1 = ");
-//        Serial.print(ph_val1);
-//        Serial.print("           Ph Value 2 = ");
-//        Serial.print(ph_val2);
-//        Serial.println();
-//        digitalWrite(IN_1, defuzzyfikasi());
-//    }
+    //    if (millis() - processTime[0] >= 2000){
+    //        processTime[0] = millis();
+    //        Serial.print("Temp 1 = ");
+    //        Serial.print(temperature_1);
+    //        Serial.print("             Temp 2 = ");
+    //        Serial.print(temperature_2);
+    //        Serial.println();
+    //        Serial.print("Salinity 1 = ");
+    //        Serial.print(salinitasSatu);
+    //        Serial.print("          Salinity 2 = ");
+    //        Serial.print(salinitasDua);
+    //        Serial.print("           Fuzzy      = ");
+    //        Serial.print(defuzzyfikasi());
+    //        Serial.println();
+    //        Serial.print("Ph Value 1 = ");
+    //        Serial.print(ph_val1);
+    //        Serial.print("           Ph Value 2 = ");
+    //        Serial.print(ph_val2);
+    //        Serial.println();
+    //        digitalWrite(IN_1, defuzzyfikasi());
+    //    }
 
     // Kirim String ke ESP32
-    if (millis() - processTime[1] >= 2000){
+    if (millis() - processTime[1] >= 2000) {
         processTime[1] = millis();
-        String allString = String(temperature_1)+"#"+
-                           String(temperature_2)+"#"+
-                           String(salinitasSatu)+"#"+
-                           String(salinitasDua)+"#"+
-                           String(defuzzyfikasi())+"#"+
-                           String(ph_val1)+"#"+
-                           String(ph_val2)+"#";
+        String allString = String(temperature_1) + "#" +
+                           String(temperature_2) + "#" +
+                           String(ph_val1) + "#" +
+                           String(ph_val2) + "#" +
+                           String(defuzzyfikasi()) + "#";
+
         Serial.print(allString);
 
-//        Serial.print(String(temperature_1));
-//        Serial.print("#");
-//        Serial.print(String(temperature_2));
-//        Serial.print("#");
-//        Serial.print(String(salinitasSatu));
-//        Serial.print("#");
-//        Serial.print(String(salinitasDua));
-//        Serial.print("#");
-//        Serial.print(String(defuzzyfikasi()));
-//        Serial.print("#");
-//        Serial.print(String(ph_val1));
-//        Serial.print("#");
-//        Serial.print(String(ph_val2));
-//        Serial.print("#");
+        //        Serial.print(String(temperature_1));
+        //        Serial.print("#");
+        //        Serial.print(String(temperature_2));
+        //        Serial.print("#");
+        //        Serial.print(String(salinitasSatu));
+        //        Serial.print("#");
+        //        Serial.print(String(salinitasDua));
+        //        Serial.print("#");
+        //        Serial.print(String(defuzzyfikasi()));
+        //        Serial.print("#");
+        //        Serial.print(String(ph_val1));
+        //        Serial.print("#");
+        //        Serial.print(String(ph_val2));
+        //        Serial.print("#");
     }
 
-    if (millis() - processTime[2] >= 2000){
+    if (millis() - processTime[2] >= 2000) {
         processTime[2] = millis();
         lcd.setCursor (5, 0);
         lcd.setCursor (3, 2);
@@ -134,47 +131,87 @@ void loop() {
     delay(500);
 }
 
-unsigned char salinitasRendah1(){
-    if (salinitasSatu <= 200.46){ uRendahSalSatu =1;}
-    else if (salinitasSatu >= 200.46 && salinitasSatu <= 300.69){ uRendahSalSatu= (300.69 - salinitasSatu) / (300.69 - 200.46);}
-    else if (salinitasSatu >= 300.69){ uRendahSalSatu =0;}
+unsigned char salinitasRendah1() {
+    if (salinitasSatu <= 200.46) {
+        uRendahSalSatu = 1;
+    }
+    else if (salinitasSatu >= 200.46 && salinitasSatu <= 300.69) {
+        uRendahSalSatu = (300.69 - salinitasSatu) / (300.69 - 200.46);
+    }
+    else if (salinitasSatu >= 300.69) {
+        uRendahSalSatu = 0;
+    }
     return uRendahSalSatu;
 }
-unsigned char salinitasSedang1(){
-    if (salinitasSatu <= 200.46){ uSedangSalSatu =0;}
-    else if (salinitasSatu >= 200.46 && salinitasSatu <= 300.69){ uSedangSalSatu= (salinitasSatu - 200.46) / (300.69 - 200.46);}
-    else if (salinitasSatu >= 300.69 && salinitasSatu <= 510.5){ uSedangSalSatu= (510.5 - salinitasSatu) / (510.5 - 300.69);}
-    else if (salinitasSatu >= 510.5){ uSedangSalSatu =0;}
+unsigned char salinitasSedang1() {
+    if (salinitasSatu <= 200.46) {
+        uSedangSalSatu = 0;
+    }
+    else if (salinitasSatu >= 200.46 && salinitasSatu <= 300.69) {
+        uSedangSalSatu = (salinitasSatu - 200.46) / (300.69 - 200.46);
+    }
+    else if (salinitasSatu >= 300.69 && salinitasSatu <= 510.5) {
+        uSedangSalSatu = (510.5 - salinitasSatu) / (510.5 - 300.69);
+    }
+    else if (salinitasSatu >= 510.5) {
+        uSedangSalSatu = 0;
+    }
     return uSedangSalSatu;
 }
 unsigned char salinitasTinggi1() {
-    if (salinitasSatu <= 300.69) { uTinggiSalSatu = 0; }
-    else if (salinitasSatu >= 300.69 && salinitasSatu <= 510.5) { uTinggiSalSatu = (salinitasSatu - 300.69) / (510.5 - 300.69); }
-    else if (salinitasSatu >= 510.5) { uTinggiSalSatu = 1; }
+    if (salinitasSatu <= 300.69) {
+        uTinggiSalSatu = 0;
+    }
+    else if (salinitasSatu >= 300.69 && salinitasSatu <= 510.5) {
+        uTinggiSalSatu = (salinitasSatu - 300.69) / (510.5 - 300.69);
+    }
+    else if (salinitasSatu >= 510.5) {
+        uTinggiSalSatu = 1;
+    }
     return uTinggiSalSatu;
 }
 
-unsigned char salinitasRendah2(){
-    if (salinitasDua <= 200.46){ uRendahSalDua =1;}
-    else if (salinitasDua >= 200.46 && salinitasDua <= 300.69){ uRendahSalDua= (300.69 - salinitasDua) / (300.69 - 200.46);}
-    else if (salinitasDua >= 300.69){ uRendahSalDua =0;}
+unsigned char salinitasRendah2() {
+    if (salinitasDua <= 200.46) {
+        uRendahSalDua = 1;
+    }
+    else if (salinitasDua >= 200.46 && salinitasDua <= 300.69) {
+        uRendahSalDua = (300.69 - salinitasDua) / (300.69 - 200.46);
+    }
+    else if (salinitasDua >= 300.69) {
+        uRendahSalDua = 0;
+    }
     return uRendahSalDua;
 }
-unsigned char salinitasSedang2(){
-    if (salinitasDua <= 200.46){ uSedangSalDua =0;}
-    else if (salinitasDua >= 200.46 && salinitasDua <= 300.69){ uSedangSalDua= (salinitasDua - 200.46) / (300.69 - 200.46);}
-    else if (salinitasDua >= 300.69 && salinitasDua <= 510.5){ uSedangSalDua= (510.5 - salinitasDua) / (510.5 - 300.69);}
-    else if (salinitasDua >= 510.5){ uSedangSalDua =0;}
+unsigned char salinitasSedang2() {
+    if (salinitasDua <= 200.46) {
+        uSedangSalDua = 0;
+    }
+    else if (salinitasDua >= 200.46 && salinitasDua <= 300.69) {
+        uSedangSalDua = (salinitasDua - 200.46) / (300.69 - 200.46);
+    }
+    else if (salinitasDua >= 300.69 && salinitasDua <= 510.5) {
+        uSedangSalDua = (510.5 - salinitasDua) / (510.5 - 300.69);
+    }
+    else if (salinitasDua >= 510.5) {
+        uSedangSalDua = 0;
+    }
     return uSedangSalDua;
 }
 unsigned char salinitasTinggi2() {
-    if (salinitasDua <= 300.69) { uTinggiSalDua = 0; }
-    else if (salinitasDua >= 300.69 && salinitasDua <= 510.5) { uTinggiSalDua = (salinitasDua - 300.69) / (510.5 - 300.69); }
-    else if (salinitasDua >= 510.5) { uTinggiSalDua = 1; }
+    if (salinitasDua <= 300.69) {
+        uTinggiSalDua = 0;
+    }
+    else if (salinitasDua >= 300.69 && salinitasDua <= 510.5) {
+        uTinggiSalDua = (salinitasDua - 300.69) / (510.5 - 300.69);
+    }
+    else if (salinitasDua >= 510.5) {
+        uTinggiSalDua = 1;
+    }
     return uTinggiSalDua;
 }
 
-void fuzzifikasi(){
+void fuzzifikasi() {
     salinitasRendah1();
     salinitasSedang1();
     salinitasTinggi1();
@@ -183,14 +220,14 @@ void fuzzifikasi(){
     salinitasTinggi2();
 }
 
-float Min(float a, float b){
-    if (a < b){
+float Min(float a, float b) {
+    if (a < b) {
         return a;
     }
-    else if (b < a){
+    else if (b < a) {
         return b;
     }
-    else{
+    else {
         return a;
     }
 }
@@ -236,35 +273,35 @@ float defuzzyfikasi()
     // printf("Hasil B : %f\n", B);
     return A / B;
 }
-float getPh(int SensorPin, float cal_value, unsigned long int avg_value, int temp_value, int buffer_arrFun[]){
-    for(int i=0;i<10;i++){
-        buffer_arrFun[i]=analogRead(SensorPin);
+float getPh(int SensorPin, float cal_value, unsigned long int avg_value, int temp_value, int buffer_arrFun[]) {
+    for (int i = 0; i < 10; i++) {
+        buffer_arrFun[i] = analogRead(SensorPin);
         delay(30);
     }
-    for(int i=0;i<9;i++)
+    for (int i = 0; i < 9; i++)
     {
-        for(int j=i+1;j<10;j++)
+        for (int j = i + 1; j < 10; j++)
         {
-            if(buffer_arrFun[i]>buffer_arrFun[j])
+            if (buffer_arrFun[i] > buffer_arrFun[j])
             {
-                temp_value=buffer_arrFun[i];
-                buffer_arrFun[i]=buffer_arrFun[j];
-                buffer_arrFun[j]=temp_value;
+                temp_value = buffer_arrFun[i];
+                buffer_arrFun[i] = buffer_arrFun[j];
+                buffer_arrFun[j] = temp_value;
             }
         }
     }
-    avg_value=0;
-    for(int i=2;i<8;i++)
-        avg_value+=buffer_arrFun[i];
-    float volt=(float)avg_value*5.0/1024/6;
+    avg_value = 0;
+    for (int i = 2; i < 8; i++)
+        avg_value += buffer_arrFun[i];
+    float volt = (float)avg_value * 5.0 / 1024 / 6;
     float ph_act = -5.70 * volt + cal_value;
     return ph_act;
 }
-float getSalinity(int SensorPin){
-    float Sal= analogRead(SensorPin);
+float getSalinity(int SensorPin) {
+    float Sal = analogRead(SensorPin);
     return Sal;
 }
-float getDallasTemperature(DallasTemperature _Sensors, DeviceAddress _deviceAddress){
+float getDallasTemperature(DallasTemperature _Sensors, DeviceAddress _deviceAddress) {
     _Sensors.requestTemperatures();
     float tempC = _Sensors.getTempC(_deviceAddress);
     return tempC;
