@@ -30,6 +30,7 @@ int PhPin2 = A3;
 
 //-- Salinity sensor with Fuzzy Logic --//
 float salinitasSatu, salinitasDua;
+long salPercentSatu, salPercentDua;
 float uRendahSalSatu, uSedangSalSatu, uTinggiSalSatu;
 float uRendahSalDua, uSedangSalDua, uTinggiSalDua;
 
@@ -38,9 +39,9 @@ int AnalogInPin = A0, AnalogInPin2 = A1;
 float minr[9];
 float Rule[9];
 
-float redup = 1;
-float normal = 128;
-float terang = 255;
+float redup = 0;
+float normal = 0.5;
+float terang = 1;
 
 //-- L289N --//
 int IN_1 = 4;
@@ -69,11 +70,14 @@ void loop() {
     salinitasSatu = getSalinity(AnalogInPin);
     salinitasDua = getSalinity(AnalogInPin2);
 
+    salPercentSatu = map(salinitasSatu, 0, 1023, 0.0, 100.0);
+    salPercentDua = map(salinitasDua, 0, 1023, 0.0, 100.0);
+
     ph_val1 = getPh(PhPin, calibration_value, avgval, temp, buffer_arr);
     ph_val2 = getPh(PhPin2, calibration_value, avgval2, temp2, buffer_arr2);
 
-    // -- Serial Print Arduino Monitor --//
-    //    if (millis() - processTime[0] >= 2000){
+    //    //     -- Serial Print Arduino Monitor --//
+    //    if (millis() - processTime[0] >= 2000) {
     //        processTime[0] = millis();
     //        Serial.print("Temp 1 = ");
     //        Serial.print(temperature_1);
@@ -81,9 +85,9 @@ void loop() {
     //        Serial.print(temperature_2);
     //        Serial.println();
     //        Serial.print("Salinity 1 = ");
-    //        Serial.print(salinitasSatu);
+    //        Serial.print(salPercentSatu / 10.0);
     //        Serial.print("          Salinity 2 = ");
-    //        Serial.print(salinitasDua);
+    //        Serial.print(salPercentDua / 10.0);
     //        Serial.print("           Fuzzy      = ");
     //        Serial.print(defuzzyfikasi());
     //        Serial.println();
@@ -100,9 +104,11 @@ void loop() {
         processTime[1] = millis();
         String allString = String(temperature_1) + "#" +
                            String(temperature_2) + "#" +
+                           String(salPercentSatu / 10.0) + "#" +
+                           String(salPercentDua / 10.0) + "#" +
+                           String(defuzzyfikasi()) + "#" +
                            String(ph_val1) + "#" +
-                           String(ph_val2) + "#" +
-                           String(defuzzyfikasi()) + "#";
+                           String(ph_val2);
 
         Serial.print(allString);
 
@@ -110,9 +116,9 @@ void loop() {
         //        Serial.print("#");
         //        Serial.print(String(temperature_2));
         //        Serial.print("#");
-        //        Serial.print(String(salinitasSatu));
+        //        Serial.print(String(salPercentSatu));
         //        Serial.print("#");
-        //        Serial.print(String(salinitasDua));
+        //        Serial.print(String(salPercentDua));
         //        Serial.print("#");
         //        Serial.print(String(defuzzyfikasi()));
         //        Serial.print("#");
@@ -300,6 +306,9 @@ float getPh(int SensorPin, float cal_value, unsigned long int avg_value, int tem
 float getSalinity(int SensorPin) {
     float Sal = analogRead(SensorPin);
     return Sal;
+}
+long map(long x, long in_min, long in_max, long out_min, long out_max) {
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 float getDallasTemperature(DallasTemperature _Sensors, DeviceAddress _deviceAddress) {
     _Sensors.requestTemperatures();
