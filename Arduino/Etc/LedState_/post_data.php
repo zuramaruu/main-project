@@ -49,9 +49,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($api_key == $api_key_value) {
         $_led_state = $_POST['value_led_s'];
         if (isset($_POST['value_led_s'])) {
-            $stmt = $mysqli->prepare("INSERT INTO state (led_state) VALUES (?)");
-            $stmt->bind_param('s', $_led_state);
-            $stmt->execute();
+//            $stmt = $mysqli->prepare("INSERT INTO state (led_state) VALUES (?)");
+//            $stmt->bind_param('s', $_led_state);
+//            $stmt->execute();
+
+            $SQL = $mysqli->prepare("UPDATE state SET led_state=?");
+            $SQL->bind_param('s', $_led_state);
+            $SQL->execute();
         }
     }
 }
@@ -66,7 +70,7 @@ while ($stmt->fetch()) {
     echo "<td>" . $led_state . "</td>";
     echo "<td>" . $reg_date . "</td>";
 //    echo "<td>" . "<a href='edit.php?_user_id=" . $id . "'> <b>EDIT</b> </a>" . "</td>";
-    echo "<td>" . "<a href='list_user.php?_del_id=" . $id . "'<b>DELETE</b> </a>" . "</td>";
+    echo "<td>" . "<a href='post_data.php?_del_id=" . $id . "'<b>DELETE</b> </a>" . "</td>";
     echo "</tr>";
 }
 ?>
