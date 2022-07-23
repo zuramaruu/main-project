@@ -13,7 +13,8 @@ LiquidCrystal_I2C lcd(0x20, 16, 2);
 #define motor_satu    9
 #define heater        10
 
-int u_time[3] = {0, 0, 0};
+int u_time[4] = {0, 0, 0, 0};
+int t_second = 0, t_minute = 0;
 uint8_t flag_btn = 0;
 uint8_t flag_state = 0;
 uint8_t flag_s = 0;
@@ -54,7 +55,11 @@ void loop() {
   if (flag_btn) {
     is_running();
   } else {
-    flag_s = 4; u_time[1] = millis();
+    flag_s = 4;
+    u_time[1] = millis();
+    u_time[2] = millis();
+    t_second = 0;
+    t_minute = 0;
   }
 
   if (flag_s == 1) state_satu();
@@ -63,13 +68,15 @@ void loop() {
     digitalWrite(push_button, LOW);
     stop_state();
     flag_btn = 0;
+    t_second = 0;
+    t_minute = 0;
   }
   if (flag_s == 4) stop_state();
 
   lcd.setCursor(3, 0);
-  String t_minute = String(millis() / 60000);
-  String t_second_ = String(millis() / 1000);
-  lcd.print("Time " + t_minute + " : " + t_second_);
+  //  String _t_minute = String(millis() / 60000);
+  //  String _t_second_ = String(millis() / 1000);
+  lcd.print("Time " + String(t_minute) + " : " + String(t_second));
 
   delay(30);
 }
@@ -77,10 +84,19 @@ double readThermo(MAX6675 _module) {
   return _module.readCelsius(), _module.readFahrenheit();
 }
 void is_running() {
-  if (millis() - u_time[1] >= 1000) flag_s = 1;
-  if (millis() - u_time[1] >= 6000) flag_s = 2;
-  if (millis() - u_time[1] >= 11000) {
+  if (millis() - u_time[1] >= 1) flag_s = 1;
+  if (millis() - u_time[1] >= 60000) flag_s = 2;
+  if (millis() - u_time[1] >= 120000) {
     flag_s = 3; u_time[1] = millis();
+  }
+
+  if (millis() - u_time[2] >= 1000) {
+    u_time[2] = millis();
+    t_second += 1;
+    if (t_second >= 60) {
+      t_minute += 1;
+      t_second = 0;
+    }
   }
 }
 
