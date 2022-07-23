@@ -1,4 +1,6 @@
 #include "max6675.h"
+#include "timer.h"
+
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C lcd(0x20, 16, 2);
@@ -13,6 +15,7 @@ LiquidCrystal_I2C lcd(0x20, 16, 2);
 #define motor_satu    9
 #define heater        10
 
+Timer timer;
 int u_time[4] = {0, 0, 0, 0};
 int t_second = 0, t_minute = 0;
 uint8_t flag_btn = 0;
@@ -35,12 +38,23 @@ void setup() {
   lcd.init();                      // inisialisasi the lcd
   lcd.backlight();
   lcd.setCursor(0, 1);
+
+  timer.setInterval(1000);
+
+  // The function to be called
+  timer.setCallback(timerCallback);
+
+  // Start the timer
+  timer.start();
+
+  //  digitalWrite(push_button, HIGH);
 }
 void loop() {
+  timer.update();
   if (digitalRead(push_button) == HIGH and flag_btn == 0) flag_btn = 1;
   if (digitalRead(reset_) == HIGH) flag_btn = 0;
 
-  if (millis() - u_time[0] >= 500) {
+  if (millis() - u_time[0] >= 1000) {
     u_time[0] = millis();
     t_celcius, t_fahrenheit = readThermo(Module);
     String t_celcius_ = String(t_celcius);
@@ -70,33 +84,40 @@ void loop() {
     flag_btn = 0;
     t_second = 0;
     t_minute = 0;
+    lcd.clear();
   }
   if (flag_s == 4) stop_state();
 
+  //  if (millis() - u_time[2] >= 1000) {
+  //    u_time[2] = millis();
+  //
+  //    //    if (t_second == 60) {
+  //    //      t_minute += 1;
+  //    //    }
+  //  }
+
+  //  if (msTimer.fire()) {
+  //    Serial.println("ms");
+  //    t_second += 1;
+  //  }
+
   lcd.setCursor(3, 0);
-  //  String _t_minute = String(millis() / 60000);
-  //  String _t_second_ = String(millis() / 1000);
+  //    String _t_minute = String(millis() / 60000);
+  //    String _t_second_ = String(millis() / 1000);
+  //  lcd.print("Time " + String(_t_minute) + " : " + String(_t_second_));
   lcd.print("Time " + String(t_minute) + " : " + String(t_second));
 
-  delay(30);
+
+  delay(10);
 }
 double readThermo(MAX6675 _module) {
   return _module.readCelsius(), _module.readFahrenheit();
 }
 void is_running() {
-  if (millis() - u_time[1] >= 1) flag_s = 1;
-  if (millis() - u_time[1] >= 60000) flag_s = 2;
-  if (millis() - u_time[1] >= 120000) {
+  if (millis() - u_time[1] >= 1000) flag_s = 1;
+  if (millis() - u_time[1] >= 61000) flag_s = 2;
+  if (millis() - u_time[1] >= 121000) {
     flag_s = 3; u_time[1] = millis();
-  }
-
-  if (millis() - u_time[2] >= 1000) {
-    u_time[2] = millis();
-    t_second += 1;
-    if (t_second >= 60) {
-      t_minute += 1;
-      t_second = 0;
-    }
   }
 }
 
@@ -118,4 +139,7 @@ void stop_state() {
   digitalWrite(motor_satu, LOW);
   digitalWrite(motor_dua, LOW);
   //  Serial.println("State Stop");
+}
+void timerCallback() {
+  t_second += 1;
 }
