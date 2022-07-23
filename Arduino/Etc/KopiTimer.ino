@@ -20,7 +20,7 @@ LiquidCrystal_I2C lcd(0x20, 16, 2);
 #define motor_dua     8
 #define motor_satu    9
 #define heater        10
-#define TIME_MILLIS   5000 // 60000 = 1 menit 
+#define TIME_MILLIS   10000 // 60000 = 1 menit 
 
 Timer timer;
 int u_time[4] = {0, 0, 0, 0};
@@ -29,7 +29,7 @@ uint8_t flag_btn = 0;
 uint8_t flag_s = 0;
 
 MAX6675 Module(mSCK, mCS, mSO);
-double t_celcius, t_fahrenheit;
+float t_celcius, t_fahrenheit;
 
 void setup() {
   Serial.begin(9600);
@@ -79,7 +79,7 @@ void loop() {
   delay(10);
 }
 
-double readThermo(MAX6675 _module) {
+float readThermo(MAX6675 _module) {
   return _module.readCelsius(), _module.readFahrenheit();
 }
 
