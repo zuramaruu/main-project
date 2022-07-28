@@ -1,0 +1,28 @@
+#define DEBUG 1
+
+void setup() {
+  Serial.begin(9600);
+  PompaExt_Init();
+  Relay_Init();
+  Dht_Init();
+  ph_Init();
+
+  Serial.println("INIT");
+}
+
+void loop() {
+//  LampuTengah_On();
+//    LoopTest_Pompa();
+//    LoopTest_Relay();
+//    bacaTemperature();
+//    bacaKelembapan();
+//    bacaMoisture();
+  bacaPh();
+  //  Control_PompaExt(1, 1);
+  //  Control_PompaExt(2, 1);
+  //  Control_PompaExt(3, 1);
+  //  Control_PompaExt(4, 1);
+  //  Control_PompaExt(5, 1);
+  //  Control_PompaExt(6, 1);
+  delay(500);
+}
