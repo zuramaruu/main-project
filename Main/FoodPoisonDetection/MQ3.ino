@@ -1,3 +1,27 @@
+/*
+  MQUnifiedsensor Library - reading an MQ3
+
+  Demonstrates the use a MQ3 sensor.
+  Library originally added 01 may 2019
+  by Miguel A Califa, Yersson Carrillo, Ghiordy Contreras, Mario Rodriguez
+
+  Added example
+  modified 23 May 2019
+  by Miguel Califa
+
+  Updated library usage
+  modified 26 March 2020
+  by Miguel Califa
+
+  Wiring:
+  https://github.com/miguel5612/MQSensorsLib_Docs/blob/master/static/img/MQ_Arduino.PNG
+  Please make sure arduino A0 pin represents the analog input configured on #define pin
+
+  This example code is in the public domain.
+
+*/
+
+//Include the library
 #include <MQUnifiedsensor.h>
 /************************Hardware Related Macros************************************/
 #define         Board                   ("Arduino Leonardo")
@@ -11,12 +35,15 @@
 //Declare Sensor
 MQUnifiedsensor MQ3(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin, Type);
 
-void MQ3_Init() {
+void MQ3Init() {
   //Init the serial port communication - to debug the library
+  Serial.begin(9600); //Init serial port
 
   //Set math model to calculate the PPM concentration and the value of constants
-  MQ3.setRegressionMethod(0); //_PPM =  a*ratio^b
-  MQ3.setA(0.3934); MQ3.setB(-1.504); // Alcohol
+  MQ3.setRegressionMethod(1); //_PPM =  a*ratio^b
+
+  MQ3.setA(574.25); MQ3.setB(-2.222);
+  //  MQ3.setA(0.3934); MQ3.setB(-1.504); // Configure the equation to to calculate Benzene concentration
   /*
     Exponential regression:
     Gas    | a      | b
@@ -74,15 +101,6 @@ void readMQ3() {
   //  delay(500); //Sampling frequency
 }
 
-float getPpm() {
-  MQ3.update();
-  return MQ3.readSensor();
-}
-
-int getMQ3Val() {
+float getMQ3Val() {
   return analogRead(Pin);
-}
-
-float getMQ3Voltage() {
-  return MQ3.getVoltage();
 }
