@@ -1,5 +1,4 @@
 #include "UI.h"
-#include "Cfg.h"
 
 #define   BAUDRATE  9600
 

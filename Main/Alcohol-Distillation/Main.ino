@@ -1,5 +1,4 @@
 #include "Main.h"
-#include "Cfg.h"
 
 MainSys sys;
 PID pid;

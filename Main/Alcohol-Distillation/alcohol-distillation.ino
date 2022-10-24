@@ -1,6 +1,5 @@
 #include "Arduino.h"
 #include "Main.h"
-#include "Cfg.h"
 #include "Sensors.h"
 #include "UI.h"
 

@@ -14,6 +14,8 @@ struct Sensor {
 
         float getValue();
 
+        float getValueF();
+
     private:
         float value;
         bool _debug = false;
@@ -29,15 +31,14 @@ struct Sensor {
 
         float getValue();
 
+        float getValueF();
+
     private:
         float value;
-        float ratio;
-        uint8_t fault;
-        uint16_t rtd;
         uint32_t thrTmr;
         bool _debug = false;
 
-        void errMsg(uint8_t _fault);
+        void errMsg();
     } thermo;
 
 private:
