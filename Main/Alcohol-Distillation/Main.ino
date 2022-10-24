@@ -32,8 +32,7 @@ void PID::Calculate(float sp, float av) {
                 de = e - le;
                 if ((u >= mx && e < 0) && (u <= mn && e > 0)) {
                         se += e;
-                }
-                else if (u > mn && u < mx) {
+                } else if (u > mn && u < mx) {
                         se += e;
                 }
 

@@ -32,7 +32,8 @@ Adafruit_MAX31865 th = Adafruit_MAX31865(CS, DI, DO, CLK);
 
 void Sensor::Init() {
         MQ3.setRegressionMethod(Exponential);
-        MQ3.setA(4.8387); MQ3.setB(-2.68);
+        MQ3.setA(4.8387);
+        MQ3.setB(-2.68);
         MQ3.init();
 
         th.begin(MAX_3WIRE);
@@ -44,7 +45,7 @@ void Sensor::Handler() {
 void Sensor::mq3Sens::Calibrate(uint16_t ratioCleanAir) {
         Serial.print("Calibrating.");
         float calcR0 = 0;
-        for (int i = 1; i <= 10; i ++) {
+        for (int i = 1; i <= 10; i++) {
                 MQ3.update();
                 calcR0 += MQ3.calibrate(ratioCleanAir);
                 Serial.print(".");
@@ -80,8 +81,14 @@ void Sensor::mq3Sens::Debug(bool _st) {
 
 void Sensor::mq3Sens::errMsg(bool err) {
         switch (err) {
-                case Inf: Serial.println("Open circuit detected"); while (1); break;
-                case Zero: Serial.println("Analog pin shorts"); while (1); break;
+                case Inf:
+                        Serial.println("Open circuit detected");
+                        while (1);
+                        break;
+                case Zero:
+                        Serial.println("Analog pin shorts");
+                        while (1);
+                        break;
         }
 }
 
@@ -97,9 +104,12 @@ void Sensor::thermoCouple::readSens() {
                 this->value = th.temperature(RNOMINAL, RREF);
 
                 if (this->_debug) {
-                        Serial.print("Ratio = "); Serial.println(ratio, 8);
-                        Serial.print("Resistance = "); Serial.println(GET_RESIST(RREF, ratio), 8);
-                        Serial.print("Temperature = "); Serial.println(th.temperature(RNOMINAL, RREF));
+                        Serial.print("Ratio = ");
+                        Serial.println(ratio, 8);
+                        Serial.print("Resistance = ");
+                        Serial.println(GET_RESIST(RREF, ratio), 8);
+                        Serial.print("Temperature = ");
+                        Serial.println(th.temperature(RNOMINAL, RREF));
                 }
 
                 thrTmr = millis();
@@ -115,7 +125,8 @@ float Sensor::thermoCouple::getValue() {
 }
 
 void Sensor::thermoCouple::errMsg(uint8_t _fault) {
-        Serial.print("Fault 0x"); Serial.println(fault, HEX);
+        Serial.print("Fault 0x");
+        Serial.println(fault, HEX);
         if (fault & MAX31865_FAULT_HIGHTHRESH) Serial.println("RTD High Threshold");
         if (fault & MAX31865_FAULT_LOWTHRESH) Serial.println("RTD Low Threshold");
         if (fault & MAX31865_FAULT_REFINLOW) Serial.println("REFIN- > 0.85 x Bias");
