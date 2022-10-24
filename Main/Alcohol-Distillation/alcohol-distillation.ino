@@ -4,6 +4,8 @@
 #include "UI.h"
 
 void Start() {
+  pid.SetConstants(0.1, 0.03, 0, 0.1);
+  pid.SetLimit(0, 255);
   ui.Init();
   sens.Init();
 }
@@ -15,4 +17,5 @@ void setup() {
 void loop() {
   sens.mq3.readSens();
   sens.mq3.Debug(true);
+  sens.thermo.readSens();
 }

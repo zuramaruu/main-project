@@ -10,6 +10,7 @@ void UserInterface::Init() {
 }
 
 void UserInterface::Handler() {
+
 }
 
 String UserInterface::parseStr(String data, char separator[], int index)
