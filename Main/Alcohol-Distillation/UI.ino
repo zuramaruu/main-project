@@ -13,8 +13,21 @@ void UserInterface::Handler() {
 
 }
 
-String UserInterface::parseStr(String data, char separator[], int index)
-{
+void UserInterface::parseIn() {
+  if ( Serial.available() > 1 ) {
+    String read[3];
+    read[0] =  Serial.readString();
+    read[1] = parseStr(read[0], "#", 0);
+    if (read[1] == "p1") {
+      read[2] = parseStr(read[0], "#", 1);
+    }
+    else if (read[1] == "p2") {
+      read[2] = parseStr(read[0], "#", 1);
+    }
+  }
+}
+
+String UserInterface::parseStr(String data, char separator[], int index) {
   int found = 0;
   int strIndex[] = {0, -1};
   int maxIndex = data.length() - 1;

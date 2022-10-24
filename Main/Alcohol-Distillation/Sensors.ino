@@ -23,7 +23,7 @@
 #define   MAX_4WIRE       0
 #define   T_SAMPLING      1000
 
-#define   GET_RESIST(REF, RAT) REF * RAT;
+#define   GET_RESIST(REF, RAT) REF * RAT
 
 Sensor sens;
 
@@ -96,8 +96,18 @@ void Sensor::thermoCouple::readSens() {
     if (fault) errMsg(fault);
     this->value = th.temperature(RNOMINAL, RREF);
 
+    if (this->_debug) {
+      Serial.print("Ratio = "); Serial.println(ratio, 8);
+      Serial.print("Resistance = "); Serial.println(GET_RESIST(RREF, ratio), 8);
+      Serial.print("Temperature = "); Serial.println(th.temperature(RNOMINAL, RREF));
+    }
+
     thrTmr = millis();
   }
+}
+
+void Sensor::thermoCouple::Debug(bool _st) {
+  this->_debug = _st;
 }
 
 float Sensor::thermoCouple::getValue() {

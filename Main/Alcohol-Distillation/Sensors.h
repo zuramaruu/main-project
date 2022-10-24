@@ -19,6 +19,7 @@ struct Sensor {
 
     struct thermoCouple {
         void readSens();
+        void Debug(bool _st);
         float getValue();
 
       private:
@@ -27,6 +28,7 @@ struct Sensor {
         uint8_t fault;
         uint16_t rtd;
         uint32_t thrTmr;
+        bool _debug = false;
         void errMsg(uint8_t _fault);
     } thermo;
 

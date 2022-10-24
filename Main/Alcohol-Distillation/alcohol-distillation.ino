@@ -18,4 +18,5 @@ void loop() {
   sens.mq3.readSens();
   sens.mq3.Debug(true);
   sens.thermo.readSens();
+  sens.thermo.Debug(true);
 }
