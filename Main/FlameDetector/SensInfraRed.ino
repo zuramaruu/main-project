@@ -6,14 +6,10 @@ void ir_Init() {
         pinMode(IR_PIN, INPUT);
 }
 
-void ir_readSens(bool _debug) {
+void ir_readSens() {
         if (millis() - u_time[2] >= IR_SAMPLING) {
 
                 irState = !digitalRead(IR_PIN);
-                if (_debug) {
-                        Serial.print("State = ");
-                        Serial.println(irState);
-                }
 
                 u_time[2] = millis();
         }

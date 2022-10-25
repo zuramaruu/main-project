@@ -38,16 +38,11 @@ void mq2_Calibrate() {
         MQ2.serialDebug(true);
 }
 
-void mq2_readSens(bool _debug) {
+void mq2_readSens() {
         if (millis() - u_time[0] >= MQ_SAMPLING) {
 
                 MQ2.update();
                 mq2Value = MQ2.readSensor();
-                if (_debug) {
-                        //      MQ2.serialDebug();
-                        Serial.print("CO = ");
-                        Serial.println(mq2Value);
-                }
 
                 u_time[0] = millis();
         }
