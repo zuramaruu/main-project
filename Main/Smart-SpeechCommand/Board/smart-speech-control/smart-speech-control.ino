@@ -1,6 +1,6 @@
 #include "server.h"
 
-#define   POT      13
+#define   POT      34
 #define   SW_1     12
 #define   SW_2     14
 #define   ON       "ON"
@@ -20,22 +20,25 @@ void setup() {
 
 void loop() {
   if (millis() - sysTmr[0] >= 30) {
-    
+    Serial.println("server.read(RL_1) = " + server.read(RL_1));
+    Serial.println("server.read(RL_2) = " + server.read(RL_2));
+
     if (server.read(RL_1) == ON)
-      digitalWrite(pin[0], LOW);
+      digitalWrite(pin[1], LOW);
     else if (server.read(RL_1) == OFF)
-      digitalWrite(pin[0], HIGH);
+      digitalWrite(pin[1], HIGH);
 
     if (server.read(RL_2) == ON)
-      digitalWrite(pin[1], LOW);
-    else if (server.read(RL_2) == OsFF)
-      digitalWrite(pin[1], HIGH);
+      digitalWrite(pin[2], LOW);
+    else if (server.read(RL_2) == OFF)
+      digitalWrite(pin[2], HIGH);
 
     sysTmr[0] = millis();
   }
 
   if (millis() - sysTmr[1] >= 30) {
-    int val = analogRead(POT);
+    int val = analogRead(pin[0]);
+    Serial.println("val = " + String(val));
     server.send(val);
 
     sysTmr[1] = millis();
@@ -44,7 +47,12 @@ void loop() {
 
 void InitPin() {
   for (uint8_t i = 0; i < 3; i++) {
-    if (i > 1) pinMode(pin[i], INPUT);
+    if (i < 1) pinMode(pin[i], INPUT);
     else pinMode(pin[i], OUTPUT);
   }
+  pinMode(26, OUTPUT);
+  pinMode(27, OUTPUT);
+
+  digitalWrite(26, HIGH);
+  digitalWrite(27, LOW);
 }
