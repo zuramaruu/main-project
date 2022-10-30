@@ -23,13 +23,14 @@ class SpeechText:
 
                 # self.speech(self.tx[1])
                 service = self.listen_s.recognize_google(my_voice, language='id-ID')
+                service = str(service).lower()
 
         except sr.UnknownValueError as e:
             pass
 
         if service != "":
             print("Command : " + service)
-        return service.replace(" ", "")
+            return service.replace(" ", "")
 
     @staticmethod
     def speech(txt):

@@ -1,7 +1,6 @@
 from utils.SpeechText import SpeechText
 from api.api import app
 import requests
-import threading
 
 
 class Handler:
@@ -41,38 +40,24 @@ class Handler:
 
     def onRun(self):
         txt = self.st.listen()
-        self.send(txt)
+        if txt is not None:
+            # print(txt)
+            for i in range(10):
+                self.send(txt)
 
     def onRequest(self):
         if self.commandRequest() == "ON":
-            print(f"Value = {self.valueRequest()}")
-
-
-class Process:
-    def __init__(self):
-        self.t = Handler()
-
-        self.process1 = threading.Thread(
-            target=self.t.onRun,
-            name='1')
-        self.process2 = threading.Thread(
-            target=self.t.onRequest,
-            name='t2')
-
-    def onStart(self):
-        self.process1.start()
-        self.process2.start()
-
-    def onJoin(self):
-        self.process1.join()
-        self.process2.join()
+            buff = int(self.valueRequest())
+            buff = buff * (3.3 / 4095)
+            buff = round(buff, 2)
+            print(f"Volt = {buff}")
 
 
 if __name__ == '__main__':
+    h = Handler()
     while True:
         try:
-            p = Process()
-            p.onStart()
-            p.onJoin()
+            h.onRun()
+            h.onRequest()
         except IOError as e:
             print(e)
